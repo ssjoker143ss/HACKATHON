@@ -33,7 +33,6 @@ pipeline{
             steps{
                 script {
                     echo "====== Now building the custom react app ======"
-                    sh 'nvm install $NODE_VERSION'
                     sh 'npm install'
                     sh "npm run build"
                      }
