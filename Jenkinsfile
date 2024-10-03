@@ -14,7 +14,7 @@ pipeline{
         IMAGE_TAG   = "${RELEASE}-${BUILD_NUMBER}" 
         SONAR_TOKEN = "jenkins-sonar-token"
         NODE_VERSION = '20.17.0'
-        SONAR_SCANNER_HOME = tool 'SonarQubeScanner'  // Name of SonarQube scanner tool in Jenkins configuration
+        SONAR_SCANNER_HOME = tool 'SonarQube Scanner'  // Name of SonarQube scanner tool in Jenkins configuration
         SONARQUBE_URL = 'http://cnc-hackvm20.eastus.cloudapp.azure.com:9000' // Your SonarQube server URL
     }
     stages{
