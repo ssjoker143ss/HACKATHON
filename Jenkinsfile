@@ -1,18 +1,18 @@
 pipeline{
-    agent{
-        label "jenkins-agent"
-    }
+    agent any
     tools{
         jdk 'Java17'
+        nodejs 'nodejs'
         maven 'Maven3'
     }
     environment {
-        APP_NAME    = "java_devops_pipeleine"
+        APP_NAME    = "myreactapp"
         RELEASE     = "1.0.0"
         DOCKER_USER = "irohitmishra"
         DOCKER_PASS = "dockerHub"
         IMAGE_NAME  = "${DOCKER_USER}" + "_" + "${APP_NAME}"
         IMAGE_TAG   = "${RELEASE}-${BUILD_NUMBER}" 
+        SONAR_TOKEN = "jenkins-sonar-token"
     }
     stages{
         stage ("Clean up Workspace"){
@@ -25,23 +25,34 @@ pipeline{
         stage ("Check out from Bit Bucket Repo"){
             steps{
                 echo "======Code Check out from the Main Branch ======"
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'deb0e7a2-8f46-4add-a8dd-f42875546834', url: 'https://irohitmishra-admin@bitbucket.org/irohit_hcl/java_devops_pipeleine.git']])
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'irohitmishra-admin', url: 'https://irohitmishra-admin@bitbucket.org/irohit_hcl/myreactapp.git']])
             }
         }
-        stage ("Build the Application with Maven"){
-            steps{
-                echo "====== Now building the custom java application with Maven ======"
-                sh "mvn clean package"
-            }
-        }
-        stage ("SonarQube Code Analysis"){
+        stage ("Build the Application with node"){
             steps{
                 script {
-                    echo "====== Now doing Code Quality check via SonarQube ======"
-                    withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') 
-                        {
-                        sh "mvn sonar:sonar"
+                    echo "====== Now building the custom java application with Maven ======"
+                    sh "npm install"
+                    sh "npm run build"
+                     }
+                }
+        }
+        stage('SonarQube Analysis'){
+            environment {
+                // Replace with your SonarQube server token or define it as a Jenkins credential
+                SONAR_TOKEN = credentials('sonar-token')
                         }
+            steps{
+                script{
+                    // Run SonarQube Scanner
+                    withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token'){ 
+                        sh '''
+                        sonar-scanner \
+                        -Dsonar.projectKey=my-react-app \
+                        -Dsonar.sources=. \
+                        -Dsonar.login=$SONAR_TOKEN
+                        '''
+                    }
                 }
             }
         }
@@ -52,15 +63,13 @@ pipeline{
                     waitForQualityGate abortPipeline: false, credentialsId: 'jenkins-sonarqube-token' 
                 }
             }
-        }
-        
+        }  
         stage('Docker Build') {
                 steps {
                     sh 'docker build -t "$JOB_NAME":"${RELEASE}"."${BUILD_ID}" .'
                     sh 'docker image tag "$JOB_NAME":"${RELEASE}"."${BUILD_ID}" "${DOCKER_USER}"/"${APP_NAME}":"${RELEASE}"."${BUILD_ID}"'
                     sh 'docker image tag "$JOB_NAME":"${RELEASE}"."${BUILD_ID}" "${DOCKER_USER}"/"${APP_NAME}":latest'
-                    
-                    
+                            
                     }
         }
         stage('Docker Push') {
