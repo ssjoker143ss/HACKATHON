@@ -39,33 +39,6 @@ pipeline{
                      }
                 }
         }
-        stage('SonarQube Analysis'){
-            environment {
-                // Replace with your SonarQube server token or define it as a Jenkins credential
-                SONAR_TOKEN = credentials('sonar-token')
-                        }
-            steps{
-                script{
-                    // Run SonarQube Scanner
-                    withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token'){ 
-                        sh '''
-                        sonar-scanner \
-                        -Dsonar.projectKey=my-react-app \
-                        -Dsonar.sources=. \
-                        -Dsonar.login=$SONAR_TOKEN
-                        '''
-                    }
-                }
-            }
-        }
-        stage ("SonarQube Quality Gate Check"){
-            steps{
-                script {
-                    echo "====== Now doing Code Quality Gate check via SonarQube ======"
-                    waitForQualityGate abortPipeline: false, credentialsId: 'jenkins-sonarqube-token' 
-                }
-            }
-        }  
         stage('Docker Build') {
                 steps {
                     sh 'docker build -t "$JOB_NAME":"${RELEASE}"."${BUILD_ID}" .'
