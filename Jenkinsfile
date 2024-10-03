@@ -13,6 +13,7 @@ pipeline{
         IMAGE_NAME  = "${DOCKER_USER}" + "_" + "${APP_NAME}"
         IMAGE_TAG   = "${RELEASE}-${BUILD_NUMBER}" 
         SONAR_TOKEN = "jenkins-sonar-token"
+        NODE_VERSION = '20.17.0'
     }
     stages{
         stage ("Clean up Workspace"){
@@ -31,8 +32,9 @@ pipeline{
         stage ("Build the Application with node"){
             steps{
                 script {
-                    echo "====== Now building the custom java application with Maven ======"
-                    sh "npm install"
+                    echo "====== Now building the custom react app ======"
+                    sh 'nvm install $NODE_VERSION'
+                    sh 'npm install'
                     sh "npm run build"
                      }
                 }
