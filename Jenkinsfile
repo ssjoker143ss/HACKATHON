@@ -14,6 +14,9 @@ pipeline{
         IMAGE_TAG   = "${RELEASE}-${BUILD_NUMBER}" 
         SONAR_TOKEN = "jenkins-sonar-token"
         NODE_VERSION = '20.17.0'
+        SONAR_SCANNER_HOME = tool 'SonarQubeScanner'  // Name of SonarQube scanner tool in Jenkins configuration
+        SONARQUBE_URL = 'http://your-sonarqube-server-url' // Your SonarQube server URL
+        SONARQUBE_AUTH_TOKEN = credentials('sonarqube-auth-token')  // SonarQube token stored in Jenkins credentials
     }
     stages{
         stage ("Clean up Workspace"){
@@ -37,6 +40,36 @@ pipeline{
                     sh "npm run build"
                      }
                 }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Run SonarQube analysis using the SonarQube scanner
+                    withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') {  // 'SonarQube' is the SonarQube server name in Jenkins configuration
+                        sh '''
+                            ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+                            -Dsonar.projectKey=myreactapp \
+                            -Dsonar.sources=./src \
+                            -Dsonar.host.url=${SONARQUBE_URL} \
+                           
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Quality Gate') {
+            steps {
+                script {
+                    // Wait for SonarQube Quality Gate result
+                    timeout(time: 1, unit: 'HOURS') {
+                        def qualityGate = waitForQualityGate()
+                        if (qualityGate.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qualityGate.status}"
+                        }
+                    }
+                }
+            }
         }
         stage('Docker Build') {
                 steps {
