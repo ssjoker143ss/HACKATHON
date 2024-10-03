@@ -40,7 +40,7 @@ pipeline{
                      }
                 }
         }
-        stage('SonarQube Analysis') {
+        stage('SonarQube Code Quality Analysis') {
             steps {
                 script {
                     // Run SonarQube analysis using the SonarQube scanner
@@ -67,7 +67,6 @@ pipeline{
                         }
                     }
                 }
-            }
         }
         stage('Docker Build') {
                 steps {
@@ -91,5 +90,11 @@ pipeline{
             sh 'kubectl apply -f deploymentservice.yaml'
             }
        }
+       stage (" Post Clean up Workspace"){
+            steps{
+                echo "====== Cleaning up the Workspace ======"
+                cleanWs()
+            }
+        }
     }
 }
