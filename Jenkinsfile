@@ -112,7 +112,7 @@ pipeline{
             withKubeConfig([credentialsId: 'AKS_k8']) {
               sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"'
               sh 'chmod u+x ./kubectl'
-              sh './kubectl apply -f deploymentmanifest.yaml'
+              sh './kubectl apply -f deploymentservice.yaml'
                 }
           }
         }
