@@ -74,7 +74,7 @@ pipeline{
                     }
                 }
         }
-        stage('Docker Build') {
+        /*stage('Docker Build') {
                 steps {
                     sh 'docker build -t "$JOB_NAME":"${RELEASE}"."${BUILD_ID}" .'
                     sh 'docker image tag "$JOB_NAME":"${RELEASE}"."${BUILD_ID}" "${DOCKER_USER}"/"${APP_NAME}":"${RELEASE}"."${BUILD_ID}"'
@@ -90,6 +90,23 @@ pipeline{
                 sh 'docker push "${DOCKER_USER}"/"${APP_NAME}":latest'
                     }
                 }
+        }*/
+        stage('Build Docker Image') {
+            steps {
+                script {
+                     //docker.build("${env.DOCKER_IMAGE}")
+                sh "docker build -t ${ACR_NAME}.azurecr.io/${ACR_REPO}:${IMAGE_TAG} ."
+                }
+            }
+        }
+        stage ('Upload Docker Image to ACR'){
+           steps {
+              script {
+                  docker.withRegistry("http://${registryUrl}", 'ACR'){
+                        docker.image("${env.DOCKER_IMAGE}").push()
+                     }
+                }
+            }
         }
        stage('Login to ACR'){
            steps{
