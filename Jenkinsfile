@@ -9,12 +9,12 @@ pipeline{
         APP_NAME    = "myreactapp"
         RELEASE     = "1.0.0"
         DOCKER_USER = "irohitmishra"
-        DOCKER_PASS = "dockerHub"
+        DOCKER_PASS = "dockerid"
         IMAGE_NAME  = "${DOCKER_USER}" + "_" + "${APP_NAME}"
         IMAGE_TAG   = "${RELEASE}-${BUILD_NUMBER}" 
         SONAR_TOKEN = "sonarid"
         NODE_VERSION = '20.17.0'
-        SONAR_SCANNER_HOME = tool 'SonarQube Scanner'  // Name of SonarQube scanner tool in Jenkins configuration
+        SONAR_SCANNER_HOME = tool 'SonarScanner'  // Name of SonarQube scanner tool in Jenkins configuration
         SONARQUBE_URL = 'http://20.121.116.30:9000/' // Your SonarQube server URL
         registryUrl = 'bayeracr.azurecr.io'
         registryCredential = 'ACR'
@@ -85,7 +85,7 @@ pipeline{
         }
         stage('Docker Push') {
                 steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerid', passwordVariable: 'dockeridPassword', usernameVariable: 'dockeridUsername')]) {
                 sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
                 sh 'docker push "${DOCKER_USER}"/"${APP_NAME}":"${RELEASE}"."${BUILD_ID}"'
                 sh 'docker push "${DOCKER_USER}"/"${APP_NAME}":latest'
