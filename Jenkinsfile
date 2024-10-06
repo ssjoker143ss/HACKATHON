@@ -99,15 +99,6 @@ pipeline{
                 }
             }
         }
-        stage ('Upload Docker Image to ACR'){
-           steps {
-              script {
-                  docker.withRegistry("http://${registryUrl}", 'ACR'){
-                        docker.image("${env.DOCKER_IMAGE}").push()
-                     }
-                }
-            }
-        }
        stage('Login to ACR'){
            steps{
                 script{
