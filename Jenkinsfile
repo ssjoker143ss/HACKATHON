@@ -10,8 +10,7 @@ pipeline{
         RELEASE     = "1.0.0"
         DOCKER_USER = "irohitmishra"
         DOCKER_PASS = "dockerid"
-        IMAGE_NAME  = "${DOCKER_USER}" + "_" + "${APP_NAME}"
-        IMAGE_TAG   = "${RELEASE}-${BUILD_NUMBER}" 
+        IMAGE_NAME  = "${DOCKER_USER}" + "_" + "${APP_NAME}" 
         SONAR_TOKEN = "sonarid"
         NODE_VERSION = '20.17.0'
         SONAR_SCANNER_HOME = tool 'SonarScanner'  // Name of SonarQube scanner tool in Jenkins configuration
