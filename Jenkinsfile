@@ -12,10 +12,17 @@ pipeline{
         DOCKER_PASS = "dockerHub"
         IMAGE_NAME  = "${DOCKER_USER}" + "_" + "${APP_NAME}"
         IMAGE_TAG   = "${RELEASE}-${BUILD_NUMBER}" 
-        SONAR_TOKEN = "jenkins-sonar-token"
+        SONAR_TOKEN = "sonarid"
         NODE_VERSION = '20.17.0'
         SONAR_SCANNER_HOME = tool 'SonarQube Scanner'  // Name of SonarQube scanner tool in Jenkins configuration
-        SONARQUBE_URL = 'http://cnc-hackvm20.eastus.cloudapp.azure.com:9000' // Your SonarQube server URL
+        SONARQUBE_URL = 'http://20.121.116.30:9000/' // Your SonarQube server URL
+        registryUrl = 'bayeracr.azurecr.io'
+        registryCredential = 'ACR'
+        ACR_NAME = 'bayeracr'
+        ACR_REPO = 'bayer-usermagement'
+        IMAGE_TAG = "${env.JOB_NAME}-${env.BUILD_ID}"
+        ACR_CREDENTIALS = credentials('acr-credentials')
+
     }
     stages{
         stage ("Clean up Workspace"){
@@ -44,7 +51,7 @@ pipeline{
             steps {
                 script {
                     // Run SonarQube analysis using the SonarQube scanner
-                    withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') {  // 'SonarQube' is the SonarQube server name in Jenkins configuration
+                    withSonarQubeEnv(credentialsId: 'sonarid') {  // 'SonarQube' is the SonarQube server name in Jenkins configuration
                         sh '''
                             ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
                             -Dsonar.projectKey=myreactapp \
@@ -85,11 +92,31 @@ pipeline{
                     }
                 }
         }
-       stage('Deploy to Minikube') {
-        steps {
-            sh 'kubectl apply -f deploymentservice.yaml'
+       stage('Login to ACR'){
+           steps{
+                script{
+                        // log in to Azur Container Registry
+                sh "echo ${ACR_CREDENTIALS} | docker login ${ACR_NAME}.azurecr.io --username ${ACR_NAME} --password-stdin"
+                }
             }
-       }
+        }
+        stage('Push Docker Image to ACR'){
+           steps {
+                script {
+                        // Push the Docker Image to Container registry
+                        sh "docker push ${ACR_NAME}.azurecr.io/${ACR_REPO}:${IMAGE_TAG}"
+                }
+            }
+        }
+        stage('Deploy to AKS') {
+          steps {
+            withKubeConfig([credentialsId: 'AKS_k8']) {
+              sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"'
+              sh 'chmod u+x ./kubectl'
+              sh './kubectl apply -f deploymentmanifest.yaml'
+                }
+          }
+        }
        stage (" Post Clean up Workspace"){
             steps{
                 echo "====== Cleaning up the Workspace ======"
