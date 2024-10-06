@@ -95,7 +95,7 @@ pipeline{
             steps {
                 script {
                      //docker.build("${env.DOCKER_IMAGE}")
-                sh "docker build -t ${ACR_NAME}.azurecr.io/${ACR_REPO}:${IMAGE_TAG} ."
+                sh "docker build -t ${ACR_NAME}.azurecr.io/${ACR_REPO}:latest ."
                 }
             }
         }
