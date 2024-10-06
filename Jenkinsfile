@@ -82,9 +82,9 @@ pipeline{
                             
                     }
         }
-        stage('Docker Push') {
+       stage('Docker Push') {
                 steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerid', passwordVariable: 'dockeridPassword', usernameVariable: 'dockeridUsername')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
                 sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
                 sh 'docker push "${DOCKER_USER}"/"${APP_NAME}":"${RELEASE}"."${BUILD_ID}"'
                 sh 'docker push "${DOCKER_USER}"/"${APP_NAME}":latest'
