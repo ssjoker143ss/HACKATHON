@@ -111,7 +111,7 @@ pipeline{
            steps {
                 script {
                         // Push the Docker Image to Container registry
-                        sh "docker push ${ACR_NAME}.azurecr.io/${ACR_REPO}:${IMAGE_TAG}"
+                        sh "docker push ${ACR_NAME}.azurecr.io/${ACR_REPO}:latest"
                 }
             }
         }
