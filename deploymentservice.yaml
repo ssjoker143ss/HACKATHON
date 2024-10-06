@@ -18,7 +18,7 @@ spec:
       - name: myreact-app
         image: irohitmishra/myreactapp:latest # Replace with your Docker image
         ports:
-        - containerPort: 80
+        - containerPort: 3000
 ---
 apiVersion: v1
 kind: Service
@@ -29,6 +29,6 @@ spec:
     app: myreact-app
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
+      port: 8090
+      targetPort: 3000
   type: NodePort
