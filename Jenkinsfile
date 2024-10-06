@@ -18,7 +18,7 @@ pipeline{
         registryUrl = 'bayeracr.azurecr.io'
         registryCredential = 'ACR'
         ACR_NAME = 'bayeracr'
-        ACR_REPO = 'bayer-usermagement'
+        ACR_REPO = 'bayer-myreactapp'
         IMAGE_TAG = "${env.JOB_NAME}-${env.BUILD_ID}"
         ACR_CREDENTIALS = credentials('acr-credentials')
 
