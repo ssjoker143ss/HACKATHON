@@ -1,0 +1,100 @@
+pipeline {
+    agent any
+    environment {
+        registryUrl = 'bayeracr.azurecr.io'
+        registryCredential = 'ACR'
+        ACR_NAME = 'bayeracr'
+        ACR_REPO = 'bayer-myreactapp'
+        IMAGE_TAG = "${env.JOB_NAME}-${env.BUILD_ID}"
+        ACR_CREDENTIALS = credentials('acr-credentials')
+// Replace with your Git repository URL
+    }
+    stages{
+        stage ("Clean up Workspace"){
+            steps{
+                echo "====== Cleaning up the Workspace ======"
+                cleanWs()
+            }
+        }
+        stage ("Check out from Git Repo"){
+            steps{
+                echo "======Code Check out from the Main Branch ======"
+            checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'irohitmishra-admin', url: 'https://irohitmishra-admin@bitbucket.org/irohit_hcl/myreactapp.git']])
+	}
+        }
+            // run sonarqube test
+        stage('SAST - SonarQube Code Quality Analysis') {
+            environment {
+                scannerHome = tool 'SonarScanner';
+            }
+            steps {
+              withSonarQubeEnv(credentialsId: 'sonarid', installationName: 'sonarserver') {
+                sh "${scannerHome}/bin/sonar-scanner"
+              }
+            }
+        }
+        /*stage("SQ - Quality Gate Check"){
+            steps {
+                script {
+                    timeout(time: 2, unit: 'MINUTES') { // Just in case something goes wrong, pipeline will be killed after a timeout
+                    //We have added timeout so if pipeline does not complete in in 2 Mins then it will fail .
+                    //Ensure sonarqube webhook is configured
+                    def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv , check quality gate status .
+                    if (qg.status != 'OK') {
+                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
+                    }
+                }
+            }
+        }*/
+        stage('Build Docker Image') {
+            steps {
+                script {
+                     docker.build("${env.DOCKER_IMAGE}")
+                sh "docker build -t ${ACR_NAME}.azurecr.io/${ACR_REPO}:${IMAGE_TAG} ."
+                sh "docker build -t ${ACR_NAME}.azurecr.io/${ACR_REPO}:latest ."
+                }
+            }
+        }
+        /*stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerid') {
+                        docker.image("${env.DOCKER_IMAGE}").push()
+                    }
+                }
+            }
+        }*/
+        /*stage (Upload Docker Image to ACR){
+           steps {
+              script {
+                  docker.withRegistry("http://${registryUrl}", 'ACR'){
+                        docker.image("${env.DOCKER_IMAGE}").push()
+                     }
+                }
+            }
+        }*/
+        stage('Login to ACR'){
+           steps{
+                script{
+                        // log in to Azur Container Registry
+                sh "echo ${ACR_CREDENTIALS} | docker login ${ACR_NAME}.azurecr.io --username ${ACR_NAME} --password-stdin"
+                }
+            }
+        }
+        stage('Push Docker Image to ACR'){
+           steps {
+                script {
+                        // Push the Docker Image to Container registry
+                        sh "docker push ${ACR_NAME}.azurecr.io/${ACR_REPO}:${IMAGE_TAG}"
+                        sh "docker push ${ACR_NAME}.azurecr.io/${ACR_REPO}:latest"
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

@@ -111,11 +111,12 @@ pipeline{
            steps {
                 script {
                         // Push the Docker Image to Container registry
+                        sh "docker push ${ACR_NAME}.azurecr.io/${ACR_REPO}:${IMAGE_TAG}"
                         sh "docker push ${ACR_NAME}.azurecr.io/${ACR_REPO}:latest"
                 }
             }
         }
-        stage('Deploy to AKS') {
+       /* stage('Deploy to AKS') {
           steps {
             withKubeConfig([credentialsId: 'AKS_k8']) {
               sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"'
@@ -123,7 +124,7 @@ pipeline{
               sh './kubectl apply -f deploymentservice.yaml'
                 }
           }
-        }
+        }*/
        stage (" Post Clean up Workspace"){
             steps{
                 echo "====== Cleaning up the Workspace ======"
