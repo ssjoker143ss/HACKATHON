@@ -103,13 +103,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-    # - name: Docker push
-      - run:
-        docker push imishrarohit/boardgame:latest
+  
 
-    - name: Kubectl Action
-      uses: tale/kubectl-action@v1
-      with:
-        base64-kube-config: ${{ secrets.KUBE_CONFIG }}
-    - run:
+      - name: Kubectl Action
+        uses: tale/kubectl-action@v1
+        with:
+          base64-kube-config: ${{ secrets.KUBE_CONFIG }}
+      - run:
          kubectl apply -f deployment-service.yaml
