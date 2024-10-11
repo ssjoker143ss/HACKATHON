@@ -92,6 +92,13 @@ jobs:
       - name: "Example show SonarQube Quality Gate Status value"
         run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
 
+      - name: set up aws credentilas
+        uses: Sumanshu-Nankana/setup-aws-cli@v1
+        with:
+          region: 'us-east-1'
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets. AWS_SECRET_ACCESS_KEY }}
+      
       - name: Login to Amazon ECR Public
         id: login-ecr-public
         uses: aws-actions/amazon-ecr-login@v2
