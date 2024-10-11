@@ -65,11 +65,25 @@ jobs:
       - name: Build the React app
         run: npm run build
 
-      - name: Trivy Scan
-        run:
+      - name: Install Trivy
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install wget -y
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.45.1/trivy_0.45.1_Linux-64bit.deb
+          sudo dpkg -i trivy_0.45.1_Linux-64bit.deb
+          trivy --version
+
+      # Step 3: Run Trivy scan
+      - name: Run Trivy filesystem scan
+        run: |
           trivy fs --format table -o trivy-fs-report.html .
-      - name: Official SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v3.0.0
+
+      # Step 4: Upload the report as an artifact (optional)
+      - name: Upload Trivy report
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy-fs-report
+          path: trivy-fs-report.html
             
       # Ex: v2.1.0, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
         env:
