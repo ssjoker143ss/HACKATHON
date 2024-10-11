@@ -86,27 +86,24 @@ jobs:
           path: trivy-fs-report.html
             
       # Ex: v2.1.0, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
-      - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v3 # Ex: v2.1.0, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
+      - name: Official SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v3.0.0
+            
+      # Ex: v2.1.0, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
         env:
-         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-         SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-         LC_ALL: "ru_RU.UTF-8"
-         run: |
-            npx sonar-scanner \
-            -Dsonar.projectKey=myreact-app \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=http://54.166.102.136:9000 \   # Ensure this URL is correct!
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-      # Step 6: Check SonarQube quality gate
-      - name: SonarQube Quality Gate check
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: Intall JQ
+        run:
+         sudo apt-get update && sudo apt-get install -y jq
+      - name: SonarQube Quality Gate Check 
         id: sonarqube-quality-gate-check
-        uses: sonarsource/sonarqube-quality-gate-action@master
-      # Force to fail step after specific time.
+        uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
+        # Force to fail step after specific time.
         timeout-minutes: 5
         env:
          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} #OPTIONAL
   
     # Optionally you can use the output from the Quality Gate in another step.
     # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
