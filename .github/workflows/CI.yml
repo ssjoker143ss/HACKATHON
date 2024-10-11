@@ -110,7 +110,7 @@ jobs:
         with:
           region: 'us-east-1'
           access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          secret-access-key: ${{ secrets. AWS_SECRET_ACCESS_KEY }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       
       - name: Login to Amazon ECR Public
         id: login-ecr-public
