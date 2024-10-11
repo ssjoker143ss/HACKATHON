@@ -89,9 +89,15 @@ jobs:
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v3 # Ex: v2.1.0, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
         env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-            SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-            LC_ALL: "ru_RU.UTF-8"
+         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+         SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+         LC_ALL: "ru_RU.UTF-8"
+         run: |
+            npx sonar-scanner \
+            -Dsonar.projectKey=myreact-app \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=http://http://54.166.102.136:9000\   # Ensure this URL is correct!
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
       # Step 6: Check SonarQube quality gate
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
