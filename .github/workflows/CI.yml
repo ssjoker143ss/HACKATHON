@@ -93,7 +93,7 @@ jobs:
           npx sonar-scanner \
           -Dsonar.projectKey=myreact-app \
           -Dsonar.sources=. \
-          -Dsonar.host.url=https://your-sonarqube-server.com \
+          -Dsonar.host.url={{secrets.SONAR_HOST_URL}} \
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
       # Step 6: Check SonarQube quality gate
