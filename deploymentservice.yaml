@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: myreact-app
-        image: public.ecr.aws/i1i2o2v2/bayerecr:latest # Replace with your Docker image
+        image: 730335655881.dkr.ecr.ap-south-1.amazonaws.com/bayertest:latest # Replace with your Docker image
         ports:
         - containerPort: 3000
 ---
