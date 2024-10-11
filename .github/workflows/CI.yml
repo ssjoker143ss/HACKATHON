@@ -96,7 +96,7 @@ jobs:
             npx sonar-scanner \
             -Dsonar.projectKey=myreact-app \
             -Dsonar.sources=. \
-            -Dsonar.host.url=http://http://54.166.102.136:9000\   # Ensure this URL is correct!
+            -Dsonar.host.url=http://54.166.102.136:9000 \   # Ensure this URL is correct!
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
       # Step 6: Check SonarQube quality gate
       - name: SonarQube Quality Gate check
