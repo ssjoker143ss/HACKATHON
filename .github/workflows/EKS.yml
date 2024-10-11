@@ -23,7 +23,7 @@ jobs:
     - name: set up aws credentilas
       uses: Sumanshu-Nankana/setup-aws-cli@v1
       with:
-          region: 'us-east-1'
+          region: 'ap-south-1'
           access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           secret-access-key: ${{ secrets. AWS_SECRET_ACCESS_KEY }}
     - name: Set up Terraform
