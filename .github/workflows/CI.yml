@@ -129,8 +129,11 @@ jobs:
           REPOSITORY: bayerecr
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker build -t bayerecr .
+          docker tag bayerecr:latest public.ecr.aws/i1i2o2v2/bayerecr:latest
+          docker push public.ecr.aws/i1i2o2v2/bayerecr:latest
+        #  docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+        # docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: Install kubectl
         run: |
