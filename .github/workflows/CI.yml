@@ -113,7 +113,7 @@ jobs:
       - name: set up aws credentilas
         uses: Sumanshu-Nankana/setup-aws-cli@v1
         with:
-          region: 'us-east-1'
+          region: 'ap-south-1'
           access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       
@@ -144,6 +144,6 @@ jobs:
       # Step 4: Update kubeconfig to access EKS cluster
       - name: Update kubeconfig for EKS
         run: |
-          aws eks update-kubeconfig --name my-eks-cluster --region us-east-1
+          aws eks update-kubeconfig --name my-eks-cluster --region ap-south-1
       - run:
          kubectl apply -f deploymentservice.yaml
